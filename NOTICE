@@ -1,0 +1,5 @@
+GENESIS ProofRelay MCP
+
+This public repository is a minimal discovery and setup package for the hosted
+GENESIS ProofRelay MCP verifier. It is not the internal GENESIS monorepo and is
+not a production deployment repository.

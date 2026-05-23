@@ -1,0 +1,21 @@
+name: Public Metadata
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-public-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify public backlinks and safety boundary
+        run: |
+          grep -R "https://smithery.ai/servers/genesis/proof-relay" README.md
+          grep -R "https://mcp.genesisre.io/mcp" README.md docs/mcp.md
+          grep -R "Do not submit secrets" README.md docs/mcp.md SECURITY.md
+          test -f LICENSE
+          test -f SECURITY.md
+          test -f PUBLICATION_BOUNDARY.md
