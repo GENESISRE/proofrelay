@@ -1,0 +1,2 @@
+# proofrelay
+Read-only ProofRelay MCP verifier for non-confidential evidence bundles. Exposes 22 public-safe tools, 11 resources, and 11 prompts for bundle integrity checks, receipt-chain review, checkpoint recommendations, MCP risk metadata review, and real-estate closing proof-pack readiness.
