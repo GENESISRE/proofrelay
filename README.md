@@ -3,6 +3,8 @@
 Public discovery package for the GENESIS ProofRelay MCP verifier.
 
 [![Smithery](https://smithery.ai/badge/genesis/proof-relay)](https://smithery.ai/servers/genesis/proof-relay)
+[![proofrelay MCP server](https://glama.ai/mcp/servers/GENESISRE/proofrelay/badges/card.svg)](https://glama.ai/mcp/servers/GENESISRE/proofrelay)
+[![proofrelay MCP score](https://glama.ai/mcp/servers/GENESISRE/proofrelay/badges/score.svg)](https://glama.ai/mcp/servers/GENESISRE/proofrelay)
 
 ProofRelay is a read-only MCP verifier for non-confidential evidence bundles.
 It helps agents and operators check bundle integrity, receipt ordering,
@@ -11,6 +13,7 @@ real-estate closing proof-pack readiness.
 
 ## Public Links
 
+- Glama listing: <https://glama.ai/mcp/servers/GENESISRE/proofrelay>
 - Smithery listing: <https://smithery.ai/servers/genesis/proof-relay>
 - Product page: <https://genesisre.io/proofrelay>
 - MCP endpoint: <https://mcp.genesisre.io/mcp>
