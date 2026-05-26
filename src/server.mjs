@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const SERVER_VERSION = '0.1.4';
+const SERVER_VERSION = '0.1.5';
 const MCP_ENDPOINT = 'https://mcp.genesisre.io/mcp';
 const SERVER_CARD = 'https://mcp.genesisre.io/.well-known/mcp/server-card.json';
 const PRODUCT_PAGE = 'https://genesisre.io/proofrelay';
@@ -12,10 +12,21 @@ const boundary = [
   'no payment processing, custody, legal/title certification, or real-world-truth attestation'
 ];
 
+const readOnlyAnnotations = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false
+};
+
 const tools = [
   {
     name: 'proofrelay.get_verifier_status',
-    description: 'Return public ProofRelay verifier status and discovery metadata.',
+    description: 'Read-only status lookup for public ProofRelay discovery metadata. Use first to confirm the hosted MCP endpoint, server-card URL, product URL, public tool count, and trust boundary. Requires no authentication, performs no network call from this local wrapper, mutates nothing, and returns JSON text with status, URLs, counts, and non-confidential boundary notes.',
+    annotations: {
+      ...readOnlyAnnotations,
+      title: 'Get public ProofRelay verifier status'
+    },
     inputSchema: {
       type: 'object',
       properties: {},
@@ -24,17 +35,21 @@ const tools = [
   },
   {
     name: 'proofrelay.recommend_checkpoint',
-    description: 'Recommend a public-safe checkpoint for a high-level agent action class.',
+    description: 'Read-only checkpoint recommendation for a high-level agent action class. Use before relied-upon actions such as paid_tool_call, revenue_action, external_reliance, or financial_transaction; use get_verifier_status for discovery only and verify_bundle after evidence metadata exists. Requires no authentication, mutates nothing, and returns JSON text with status pass, skipped, or needs_review plus checkpoint and reason fields.',
+    annotations: {
+      ...readOnlyAnnotations,
+      title: 'Recommend ProofRelay checkpoint'
+    },
     inputSchema: {
       type: 'object',
       properties: {
         action_class: {
           type: 'string',
-          description: 'High-level action class such as paid_tool_call, revenue_action, external_reliance, or local_dev.'
+          description: 'High-level action class. Typical values are paid_tool_call, revenue_action, external_reliance, financial_transaction, local_dev, draft, or read_only_research. High-reliance classes need an authority envelope.'
         },
         has_authority_envelope: {
           type: 'boolean',
-          description: 'Whether a bounded authority envelope is already present.'
+          description: 'Set true when the caller already has a bounded authority envelope for the action. Defaults to false when omitted.'
         }
       },
       required: ['action_class'],
@@ -43,13 +58,17 @@ const tools = [
   },
   {
     name: 'proofrelay.verify_bundle',
-    description: 'Validate the public-safe shape of a non-confidential evidence bundle fixture.',
+    description: 'Read-only public-safe bundle shape check for synthetic or non-confidential evidence metadata. Use when you already have a bundle fixture and need a local pass/fail boundary check before sharing or routing to hosted verification; use recommend_checkpoint when deciding whether a checkpoint is needed. Requires no authentication, mutates nothing, does not certify real-world facts, and returns JSON text with status, checks, problems, verifier, and hosted endpoint fields.',
+    annotations: {
+      ...readOnlyAnnotations,
+      title: 'Verify public-safe bundle fixture'
+    },
     inputSchema: {
       type: 'object',
       properties: {
         bundle: {
           type: 'object',
-          description: 'Synthetic or non-confidential evidence bundle metadata.'
+          description: 'Synthetic or non-confidential evidence bundle metadata. Do not include secrets, prompts, raw logs, source code, customer files, wallet keys, payment credentials, or tenant traces.'
         }
       },
       required: ['bundle'],
@@ -58,19 +77,33 @@ const tools = [
   },
   {
     name: 'proofrelay.scan_mcp_risk',
-    description: 'Review public MCP descriptor metadata for advisory risk signals.',
+    description: 'Read-only advisory scan of caller-supplied public MCP descriptor metadata. Use before registering or trusting an MCP server to flag mutating tools, payment or wallet language, credential signals, or missing public metadata; use verify_bundle for evidence bundles instead. Requires no authentication, does not fetch server_url, mutates nothing, is not a security certification, and returns JSON text with status, findings, recommended_control, non_claims, and boundary fields.',
+    annotations: {
+      ...readOnlyAnnotations,
+      title: 'Scan public MCP risk metadata'
+    },
     inputSchema: {
       type: 'object',
       properties: {
-        server_url: { type: 'string' },
-        descriptor: { type: 'object' }
+        server_url: {
+          type: 'string',
+          description: 'Optional public MCP server URL used only as supplied metadata. This local wrapper does not fetch it.'
+        },
+        descriptor: {
+          type: 'object',
+          description: 'Optional public MCP descriptor or listing metadata to inspect for advisory risk signals.'
+        }
       },
       additionalProperties: false
     }
   },
   {
     name: 'proofrelay.describe_cli_sdk_helper',
-    description: 'Describe the invisible pass/fail/review integration helper path.',
+    description: 'Read-only integration guide for the invisible pass/fail/review helper pattern. Use when an agent or developer needs to understand how to wrap actions with ProofRelay-style checkpoint statuses; use recommend_checkpoint for a specific action decision. Requires no authentication, mutates nothing, and returns JSON text describing statuses, hosted endpoint, and the action-to-audit flow.',
+    annotations: {
+      ...readOnlyAnnotations,
+      title: 'Describe ProofRelay helper integration'
+    },
     inputSchema: {
       type: 'object',
       properties: {},
