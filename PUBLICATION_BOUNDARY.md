@@ -13,8 +13,8 @@ marketplace and community surface.
 - public service descriptor URL
 - public non-claims and safety boundary
 - public license, security policy, and contribution policy
-- public Docker wrapper that bridges Glama release checks to the hosted
-  read-only MCP endpoint without embedding private implementation code
+- public local stdio MCP server for Glama release checks
+- synthetic or public-safe discovery, checkpoint, and boundary examples
 
 ## Excluded
 
