@@ -7,11 +7,14 @@ marketplace and community surface.
 
 - README and public setup instructions
 - public Smithery listing link
+- public Glama listing link and badges
 - public MCP endpoint and health URLs
 - public MCP server-card URL
 - public service descriptor URL
 - public non-claims and safety boundary
 - public license, security policy, and contribution policy
+- public Docker wrapper that bridges Glama release checks to the hosted
+  read-only MCP endpoint without embedding private implementation code
 
 ## Excluded
 
@@ -26,5 +29,5 @@ marketplace and community surface.
 
 ## Public Safety Rule
 
-If a file is not needed for public ProofRelay MCP discovery or setup, it does
-not belong in this repository.
+If a file is not needed for public ProofRelay MCP discovery, setup, or Glama
+release checks, it does not belong in this repository.
