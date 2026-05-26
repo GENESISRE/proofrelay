@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const SERVER_VERSION = '0.1.5';
+const SERVER_VERSION = '0.1.6';
 const MCP_ENDPOINT = 'https://mcp.genesisre.io/mcp';
 const SERVER_CARD = 'https://mcp.genesisre.io/.well-known/mcp/server-card.json';
 const PRODUCT_PAGE = 'https://genesisre.io/proofrelay';
@@ -19,6 +19,92 @@ const readOnlyAnnotations = {
   openWorldHint: false
 };
 
+const statusEnum = ['pass', 'fail', 'needs_review', 'skipped'];
+
+const boundarySchema = {
+  type: 'array',
+  items: { type: 'string' },
+  description: 'Public-safe operating boundary and non-claims.'
+};
+
+const statusOutputSchema = {
+  type: 'object',
+  properties: {
+    status: { type: 'string' },
+    server_name: { type: 'string' },
+    hosted_mcp_endpoint: { type: 'string' },
+    server_card: { type: 'string' },
+    product_page: { type: 'string' },
+    public_tool_count: { type: 'number' },
+    local_glama_tool_count: { type: 'number' },
+    boundary: boundarySchema
+  },
+  required: ['status', 'server_name', 'hosted_mcp_endpoint', 'server_card', 'product_page', 'public_tool_count', 'local_glama_tool_count', 'boundary'],
+  additionalProperties: false
+};
+
+const checkpointOutputSchema = {
+  type: 'object',
+  properties: {
+    status: { type: 'string', enum: statusEnum },
+    checkpoint: { type: 'string' },
+    reason: { type: 'string' },
+    action_class: { type: 'string' },
+    boundary: boundarySchema
+  },
+  required: ['status', 'checkpoint', 'reason', 'boundary'],
+  additionalProperties: false
+};
+
+const bundleOutputSchema = {
+  type: 'object',
+  properties: {
+    status: { type: 'string', enum: ['pass', 'fail'] },
+    verifier: { type: 'string' },
+    checks: {
+      type: 'object',
+      properties: {
+        bundle_is_object: { type: 'boolean' },
+        confidential_marker_scan: { type: 'boolean' }
+      },
+      required: ['bundle_is_object', 'confidential_marker_scan'],
+      additionalProperties: false
+    },
+    problems: { type: 'array', items: { type: 'string' } },
+    note: { type: 'string' },
+    hosted_mcp_endpoint: { type: 'string' },
+    boundary: boundarySchema
+  },
+  required: ['status', 'verifier', 'checks', 'problems', 'note', 'hosted_mcp_endpoint', 'boundary'],
+  additionalProperties: false
+};
+
+const riskOutputSchema = {
+  type: 'object',
+  properties: {
+    status: { type: 'string', enum: ['pass', 'needs_review'] },
+    findings: { type: 'array', items: { type: 'string' } },
+    recommended_control: { type: 'string' },
+    non_claims: { type: 'array', items: { type: 'string' } },
+    boundary: boundarySchema
+  },
+  required: ['status', 'findings', 'recommended_control', 'non_claims', 'boundary'],
+  additionalProperties: false
+};
+
+const helperOutputSchema = {
+  type: 'object',
+  properties: {
+    helper: { type: 'string' },
+    statuses: { type: 'array', items: { type: 'string', enum: statusEnum } },
+    hosted_mcp_endpoint: { type: 'string' },
+    example_flow: { type: 'string' },
+    boundary: boundarySchema
+  },
+  required: ['helper', 'statuses', 'hosted_mcp_endpoint', 'example_flow', 'boundary'],
+  additionalProperties: false
+};
+
 const tools = [
   {
     name: 'proofrelay.get_verifier_status',
@@ -31,7 +117,8 @@ const tools = [
       type: 'object',
       properties: {},
       additionalProperties: false
-    }
+    },
+    outputSchema: statusOutputSchema
   },
   {
     name: 'proofrelay.recommend_checkpoint',
@@ -54,7 +141,8 @@ const tools = [
       },
       required: ['action_class'],
       additionalProperties: false
-    }
+    },
+    outputSchema: checkpointOutputSchema
   },
   {
     name: 'proofrelay.verify_bundle',
@@ -73,7 +161,8 @@ const tools = [
       },
       required: ['bundle'],
       additionalProperties: false
-    }
+    },
+    outputSchema: bundleOutputSchema
   },
   {
     name: 'proofrelay.scan_mcp_risk',
@@ -95,7 +184,8 @@ const tools = [
         }
       },
       additionalProperties: false
-    }
+    },
+    outputSchema: riskOutputSchema
   },
   {
     name: 'proofrelay.describe_cli_sdk_helper',
@@ -108,7 +198,8 @@ const tools = [
       type: 'object',
       properties: {},
       additionalProperties: false
-    }
+    },
+    outputSchema: helperOutputSchema
   }
 ];
 
@@ -145,6 +236,7 @@ const prompts = [
 
 function jsonText(value) {
   return {
+    structuredContent: value,
     content: [
       {
         type: 'text',

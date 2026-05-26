@@ -5,10 +5,12 @@ import { readFileSync } from 'node:fs';
 const source = readFileSync('src/server.mjs', 'utf8');
 
 for (const required of [
-  "const SERVER_VERSION = '0.1.5'",
+  "const SERVER_VERSION = '0.1.6'",
   'readOnlyHint: true',
   'destructiveHint: false',
   'Requires no authentication',
+  'outputSchema: statusOutputSchema',
+  'structuredContent: value',
   'function sendFramed(message)',
   'function sendLine(message)',
   "method === 'initialize'",
