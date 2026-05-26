@@ -5,12 +5,13 @@ import { readFileSync } from 'node:fs';
 const source = readFileSync('src/server.mjs', 'utf8');
 
 for (const required of [
-  "const SERVER_VERSION = '0.1.3'",
+  "const SERVER_VERSION = '0.1.4'",
   'function sendFramed(message)',
   'function sendLine(message)',
   "method === 'initialize'",
   "method === 'tools/list'",
   "method === 'tools/call'",
+  "method === 'resources/templates/list'",
   'proofrelay.get_verifier_status',
   'mcp.genesisre.io'
 ]) {

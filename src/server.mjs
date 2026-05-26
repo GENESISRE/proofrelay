@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const SERVER_VERSION = '0.1.3';
+const SERVER_VERSION = '0.1.4';
 const MCP_ENDPOINT = 'https://mcp.genesisre.io/mcp';
 const SERVER_CARD = 'https://mcp.genesisre.io/.well-known/mcp/server-card.json';
 const PRODUCT_PAGE = 'https://genesisre.io/proofrelay';
@@ -93,6 +93,8 @@ const resources = [
     mimeType: 'application/json'
   }
 ];
+
+const resourceTemplates = [];
 
 const prompts = [
   {
@@ -290,6 +292,7 @@ function handleRequest(message) {
   if (method === 'tools/list') return { jsonrpc: '2.0', id, result: { tools } };
   if (method === 'tools/call') return { jsonrpc: '2.0', id, result: callTool(params?.name, params?.arguments || {}) };
   if (method === 'resources/list') return { jsonrpc: '2.0', id, result: { resources } };
+  if (method === 'resources/templates/list') return { jsonrpc: '2.0', id, result: { resourceTemplates } };
   if (method === 'resources/read') return { jsonrpc: '2.0', id, result: readResource(params?.uri) };
   if (method === 'prompts/list') return { jsonrpc: '2.0', id, result: { prompts } };
   if (method === 'prompts/get') return { jsonrpc: '2.0', id, result: getPrompt(params?.name, params?.arguments || {}) };
