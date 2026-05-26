@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const SERVER_VERSION = '0.1.2';
+const SERVER_VERSION = '0.1.3';
 const MCP_ENDPOINT = 'https://mcp.genesisre.io/mcp';
 const SERVER_CARD = 'https://mcp.genesisre.io/.well-known/mcp/server-card.json';
 const PRODUCT_PAGE = 'https://genesisre.io/proofrelay';
@@ -296,26 +296,48 @@ function handleRequest(message) {
   return { jsonrpc: '2.0', id, error: { code: -32601, message: `Method not found: ${method}` } };
 }
 
-function send(message) {
+function sendFramed(message) {
   const body = JSON.stringify(message);
   process.stdout.write(`Content-Length: ${Buffer.byteLength(body, 'utf8')}\r\n\r\n${body}`);
 }
 
+function sendLine(message) {
+  process.stdout.write(`${JSON.stringify(message)}\n`);
+}
+
 let buffer = Buffer.alloc(0);
+const keepAlive = setInterval(() => {}, 1 << 30);
 
 function processBuffer() {
   while (true) {
-    const headerEnd = buffer.indexOf('\r\n\r\n');
-    if (headerEnd === -1) return;
-    const header = buffer.slice(0, headerEnd).toString('utf8');
-    const match = header.match(/Content-Length:\s*(\d+)/i);
-    if (!match) throw new Error('Missing Content-Length header');
-    const length = Number(match[1]);
-    const messageStart = headerEnd + 4;
-    const messageEnd = messageStart + length;
-    if (buffer.length < messageEnd) return;
-    const raw = buffer.slice(messageStart, messageEnd).toString('utf8');
-    buffer = buffer.slice(messageEnd);
+    let raw;
+    let send = sendFramed;
+
+    if (buffer[0] === 0x7b) {
+      const lineEnd = buffer.indexOf('\n');
+      if (lineEnd === -1) return;
+      raw = buffer.slice(0, lineEnd).toString('utf8').replace(/\r$/, '');
+      buffer = buffer.slice(lineEnd + 1);
+      send = sendLine;
+    } else {
+      const crlfHeaderEnd = buffer.indexOf('\r\n\r\n');
+      const lfHeaderEnd = buffer.indexOf('\n\n');
+      const useLfHeader =
+        lfHeaderEnd !== -1 && (crlfHeaderEnd === -1 || lfHeaderEnd < crlfHeaderEnd);
+      const headerEnd = useLfHeader ? lfHeaderEnd : crlfHeaderEnd;
+      if (headerEnd === -1) return;
+      const separatorLength = useLfHeader ? 2 : 4;
+      const header = buffer.slice(0, headerEnd).toString('utf8');
+      const match = header.match(/Content-Length:\s*(\d+)/i);
+      if (!match) throw new Error('Missing Content-Length header');
+      const length = Number(match[1]);
+      const messageStart = headerEnd + separatorLength;
+      const messageEnd = messageStart + length;
+      if (buffer.length < messageEnd) return;
+      raw = buffer.slice(messageStart, messageEnd).toString('utf8');
+      buffer = buffer.slice(messageEnd);
+    }
+
     const message = JSON.parse(raw);
     if (message.id === undefined || message.id === null) continue;
     try {
@@ -331,7 +353,7 @@ process.stdin.on('data', (chunk) => {
   processBuffer();
 });
 
-process.stdin.on('end', () => process.exit(0));
+process.stdin.on('end', () => {});
 process.on('uncaughtException', (error) => {
   console.error(error.stack || error.message);
   process.exit(1);

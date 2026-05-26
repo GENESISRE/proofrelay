@@ -1,6 +1,6 @@
 {
   "name": "@genesisre/proofrelay-glama-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "Public-safe local MCP server for GENESIS ProofRelay Glama release checks.",
   "type": "module",
