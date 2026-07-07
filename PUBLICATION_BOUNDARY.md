@@ -27,6 +27,15 @@ marketplace and community surface.
 - internal operator dashboards or Hermes Agent City control-room material
 - legal, title, compliance, or real-world-fact certification claims
 
+## Relationship to the Hosted MCP Surface
+
+This repository intentionally tracks only the public discovery, setup, and
+local stdio subset. It may lag the hosted MCP endpoint
+(https://mcp.genesisre.io/mcp), which can expose additional tools and
+schemas before they are mirrored here. The hosted endpoint's tool names,
+input/output schemas, and descriptions are public by construction; absence
+of a tool from this repository does not mean it is non-public.
+
 ## Public Safety Rule
 
 If a file is not needed for public ProofRelay MCP discovery, setup, or Glama
