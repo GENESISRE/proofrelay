@@ -1,0 +1,30 @@
+{
+  "schema": "genesis.proofrelay.public-export-policy.v1",
+  "repository": "GENESISRE/proofrelay",
+  "intended_visibility": "public",
+  "intended_lifecycle": "archived",
+  "canonical_implementation": "private GENESIS monorepo",
+  "canonical_public_contract": "https://mcp.genesisre.io/.well-known/mcp/server-card.json",
+  "reopen_requires": [
+    "independent protected review",
+    "exact allowlist validation",
+    "full-history secret scan",
+    "live server-card parity validation",
+    "documented owner and maintenance cadence"
+  ],
+  "allowed_files": [
+    ".env.example",
+    ".github/workflows/public-metadata.yml",
+    ".gitignore",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "NOTICE",
+    "PUBLICATION_BOUNDARY.md",
+    "README.md",
+    "SECURITY.md",
+    "docs/mcp.md",
+    "export-policy.json"
+  ],
+  "prohibited_paths": ["Dockerfile", "package.json", "package-lock.json", "src", "scripts"],
+  "prohibited_suffixes": [".c", ".go", ".java", ".js", ".jsx", ".mjs", ".py", ".rb", ".rs", ".sh", ".ts", ".tsx"]
+}

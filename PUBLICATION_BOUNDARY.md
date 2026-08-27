@@ -1,7 +1,7 @@
 # Publication Boundary
 
-This public repository is an allowlisted export for the ProofRelay MCP
-marketplace and community surface.
+This archived public repository is a documentation-only, allowlisted snapshot
+for ProofRelay MCP discovery. It is not a source mirror or implementation.
 
 ## Allowed
 
@@ -13,7 +13,6 @@ marketplace and community surface.
 - public service descriptor URL
 - public non-claims and safety boundary
 - public license, security policy, and contribution policy
-- public local stdio MCP server for Glama release checks
 - synthetic or public-safe discovery, checkpoint, and boundary examples
 
 ## Excluded
@@ -26,17 +25,16 @@ marketplace and community surface.
 - private payment, custody, settlement, or charge adapters
 - internal operator dashboards or Hermes Agent City control-room material
 - legal, title, compliance, or real-world-fact certification claims
+- executable source, package manifests, lockfiles, containers, deployment
+  definitions, or local verifier substitutes
 
 ## Relationship to the Hosted MCP Surface
 
-This repository intentionally tracks only the public discovery, setup, and
-local stdio subset. It may lag the hosted MCP endpoint
-(https://mcp.genesisre.io/mcp), which can expose additional tools and
-schemas before they are mirrored here. The hosted endpoint's tool names,
-input/output schemas, and descriptions are public by construction; absence
-of a tool from this repository does not mean it is non-public.
+This repository does not track the hosted MCP surface. The hosted endpoint may
+change at any time. Its tool names, schemas, and descriptions must be discovered
+from the live server card and MCP protocol, never inferred from this snapshot.
 
 ## Public Safety Rule
 
-If a file is not needed for public ProofRelay MCP discovery, setup, or Glama
-release checks, it does not belong in this repository.
+If a file is executable or is not needed for archived public discovery and
+trust-boundary documentation, it does not belong in this repository.

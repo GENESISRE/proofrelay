@@ -13,9 +13,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify public backlinks and safety boundary
         run: |
+          grep -F "ARCHIVED NON-CANONICAL SNAPSHOT" README.md
+          grep -F "not a source mirror" README.md PUBLICATION_BOUNDARY.md
           grep -R "https://smithery.ai/servers/genesis/proof-relay" README.md
           grep -R "https://mcp.genesisre.io/mcp" README.md docs/mcp.md
           grep -R "Do not submit secrets" README.md docs/mcp.md SECURITY.md
+          test ! -e package.json
+          test ! -e Dockerfile
+          test ! -e src
+          test ! -e scripts
           test -f LICENSE
           test -f SECURITY.md
           test -f PUBLICATION_BOUNDARY.md
+          test -f export-policy.json
