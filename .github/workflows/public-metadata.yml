@@ -18,11 +18,21 @@ jobs:
           grep -R "https://smithery.ai/servers/genesis/proof-relay" README.md
           grep -R "https://mcp.genesisre.io/mcp" README.md docs/mcp.md
           grep -R "Do not submit secrets" README.md docs/mcp.md SECURITY.md
-          test ! -e package.json
-          test ! -e Dockerfile
-          test ! -e src
-          test ! -e scripts
           test -f LICENSE
           test -f SECURITY.md
           test -f PUBLICATION_BOUNDARY.md
           test -f export-policy.json
+
+          find . -type f -not -path './.git/*' -printf '%P\n' | sort > /tmp/actual-files
+          jq -r '.allowed_files[]' export-policy.json | sort > /tmp/allowed-files
+          diff -u /tmp/allowed-files /tmp/actual-files
+
+          jq -r '.prohibited_paths[]' export-policy.json | while IFS= read -r path; do
+            test ! -e "$path"
+          done
+          jq -r '.prohibited_suffixes[]' export-policy.json | while IFS= read -r suffix; do
+            if find . -type f -not -path './.git/*' -name "*$suffix" -print -quit | grep -q .; then
+              echo "prohibited executable suffix found: $suffix" >&2
+              exit 1
+            fi
+          done
