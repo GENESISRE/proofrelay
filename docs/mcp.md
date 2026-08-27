@@ -1,4 +1,7 @@
-# ProofRelay MCP Setup
+# ProofRelay MCP Discovery
+
+> **Archived non-canonical documentation snapshot.** This file is not an API
+> contract. Confirm all current tools and schemas from the live server card.
 
 ## Endpoint
 
@@ -30,8 +33,8 @@ npx -y smithery tool call proof-relay proofrelay.get_verifier_status '{}'
 
 ## Public Tool Surface
 
-The public server card currently exposes 22 read-only public-safe tools,
-11 resources, and 11 prompts.
+On 2026-08-27 the public server card exposed 26 read-only tools, 18 resources,
+and 13 prompts. These observed counts may change.
 
 Canonical server card:
 
